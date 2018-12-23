@@ -17,22 +17,29 @@ bool IsNotForce(){
 void RsiCheck(){
 
 
-   
+   bool close = False; 
    for(int i=0;i<OrdersTotal();i++){
       if(!OrderSelect(i,SELECT_BY_POS,MODE_TRADES)) continue;
       if(OrderSymbol()!=Symbol()) continue;
       if(TimeCurrent()-OrderOpenTime()>30) continue;
-      if(OrderType()==OP_BUY){
-            
-         if(IsNotForce()) close(OrderType(),OrderTicket(),OrderLots(),"RSIcheck");            
+      int type = OrderType(); 
+      if(type==OP_BUY){  
+         if(IsNotForce()){         
+            comment = "RSICheck";
+            close = True;
+         }  
  
       }
-      if(OrderType()==OP_SELL){      
-            
-         if(IsNotForce())close(OrderType(),OrderTicket(),OrderLots(),"RSICheck"); 
-                 
-      }
+
+      else if(type==OP_SELL){
       
+         if(IsNotForce()){
+            comment = "RSICheck"; 
+            close = True;
+         }          
+      }
+      if(filter(type)) return;
+      if(close) forceClose(type, comment);
    }
 
    return;
